@@ -1,4 +1,5 @@
 import subprocess
+import psutil
 from logging_utils import log
 from config import Config
 
@@ -22,3 +23,11 @@ def detener_vlc():
         log("VLC detenido para mantenimiento.")
     except Exception as e:
         log(f"ERROR al detener VLC: {e}")
+
+import psutil
+
+def vlc_esta_activo():
+    for proc in psutil.process_iter(['name']):
+        if proc.info['name'] and 'vlc' in proc.info['name'].lower():
+            return True
+    return False

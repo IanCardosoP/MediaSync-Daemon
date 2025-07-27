@@ -5,11 +5,11 @@ import sys
 import logging.handlers
 from config import Config
 from logging_utils import configurar_logging, log
-from vlc_utils import iniciar_vlc, detener_vlc
-from file_utils import validar_videos, copiar_archivos, generar_playlist, limpiar_archivos_temporales
-from sync_utils import forzar_sync_powershell, estimulate_onedrive_sync, FileAccessError
+from vlc_utils import iniciar_vlc, detener_vlc, vlc_esta_activo
+from file_utils import validar_dir, copiar_archivos, generar_playlist, limpiar_archivos_temporales, calcular_hash
+from sync_utils import forzar_sync_powershell, estimular_onedrive, FileAccessError
 
-# Validar configuración antes de iniciar
+# Validar configuración de config.py antes de iniciar
 config_errors = Config.validate()
 if config_errors:
     print("Errores en la configuración:")
@@ -37,64 +37,18 @@ refresh_cycle_delay = Config.SYNC_CONFIG['REFRESH_CYCLE_DELAY']
 # Inicializar el sistema de logging
 configurar_logging()
 
-log("---- INICIO DEL DAEMON STREAM ----")
-
-######
-# Bloque de Funciones
-#######
-
-# Calcula hash de los videos en video_dir
-def calcular_hash(file_list):
-    hashes = []
-    missing_files = []
-    
-    for f in sorted(file_list):
-        file_path = os.path.join(video_dir, f)
-        try:
-            size = os.path.getsize(file_path)
-            hashes.append(f"{size}-{f}")
-        except (FileNotFoundError, PermissionError) as e:
-            missing_files.append(f)
-            log(f"WARNING: No se puede acceder al archivo {f}: {e}")
-    
-    if missing_files:
-        # Si hay archivos faltantes, lanzamos una excepción personalizada
-        raise FileAccessError(f"No se puede acceder a {len(missing_files)} archivos: {', '.join(missing_files)}")
-    
-    return ";" if not hashes else ";".join(hashes)
+log("---- Inicio del MediaSync Daemon ----")
 
 ######
 # Bloque de primera ejecución 
 #######
 
-# 1. Validar acceso al ejecutable de VLC
-if not os.path.exists(vlc_exe):
-    log(f"ERROR: VLC no encontrado en {vlc_exe}")
-    exit()
+# Detener posibles instancias previas de VLC
+if not vlc_esta_activo:
+    detener_vlc()
 
-# 2. Validar que existen ficheros *.mp4 en video_dir
-files = validar_videos(video_dir)
-if not files:
-    log(f"ERROR: No se encontraron archivos .mp4 en {video_dir}")
-    exit()
 
-# 3. Detener posibles instancias previas de VLC
-detener_vlc()
-time.sleep(1)  # Dar tiempo para que VLC se cierre completamente
-
-# 4. Preparar directorios temporales
-try:
-    # Limpiar todo primero
-    limpiar_archivos_temporales(incluir_activos=True)
-    time.sleep(1)  # Esperar que se liberen recursos
-    
-    # Crear directorio temporal limpio
-    os.makedirs(temp_video_dir, exist_ok=True)
-except Exception as e:
-    log(f"ERROR preparando directorios temporales: {str(e)}")
-    exit()
-
-# 5. Preparar reproducción inicial
+""" # 5. Preparar reproducción inicial
 try:
     log("Preparando reproducción inicial...")
     
@@ -120,7 +74,7 @@ try:
         
     # 7. Forzar sincronización inicial de OneDrive
     log("Estimulando la sincronización inicial...")
-    estimulate_onedrive_sync(files, video_dir)
+    estimular_onedrive(files, video_dir)
     time.sleep(download_finish_delay)  # Esperar a que termine la sincronización
     
     # Guardar el hash inicial del contenido
@@ -134,30 +88,49 @@ except Exception as e:
     log(f"ERROR durante la inicialización: {str(e)}")
     detener_vlc()
     limpiar_archivos_temporales(incluir_activos=True)
-    exit()
+    exit() """
 
-log(f"INFO: Iniciando loop principal...")
 ######
 # Bucle de ejecución
 #######
 
 # Bucle principal
 error_count = 0
+
 while True:
-    
+
+    # MIENTRAS EN VIDEO_DIR NO HAY ALMENOS 1 FICHERO VALIDO
+    no_valid_content_log = 0
+    files = validar_dir(video_dir)
+
+    while not files:
+        log(f"WARNING: SIN CONTENIDO VÁLIDO EN {video_dir}")
+        estimular_onedrive(files, video_dir)
+        no_valid_content_log += 1  # Usar += en lugar de ++
+        
+        if no_valid_content_log > 10:
+            log("ERROR: POSIBLE DESCONEXIÓN.")
+            sys.exit(1)
+        
+        time.sleep(5)  
+        files = validar_dir(video_dir)  
+
+
+# ------- VOY AQUI ----- UP 
+
     try:
         
         time.sleep(refresh_cycle_delay)
         
         # Verificar archivos y manejar errores
-        files = validar_videos(video_dir)
+        files = validar_dir(video_dir)
         if not files:
             log(f"WARNING: No se encontraron archivos .mp4 en {video_dir}")
             raise FileAccessError("No hay archivos de video disponibles")
 
         # Sincronización
         log("-> Estimulación de sincronización periódica en curso...")
-        estimulate_onedrive_sync(files, video_dir)
+        estimular_onedrive(files, video_dir)
         time.sleep(download_finish_delay)
 
         # Calcular y comparar hashes

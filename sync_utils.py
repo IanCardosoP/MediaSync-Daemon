@@ -45,7 +45,7 @@ def forzar_sync_powershell():
     except Exception as e:
         log(f"ERROR al estimular sincronización de OneDrive: {e}")
 
-def estimulate_onedrive_sync(files, video_dir):
+def estimular_onedrive(files, video_dir):
     """'Toca' el directorio video_dir recursivamente para marcarlo como 'en uso' y forzar OneDrive Sync"""
     # Crear una lista de archivos que necesitan sincronización
     archivos_pendientes = []
