@@ -1,10 +1,10 @@
-# PlayOnStart - Sistema de Reproducción Automática con VLC
-Se ejecuta con `python playOnStart.py`
+# MediaSync-Daemon - Sistema de Reproducción Automática con VLC
+Se ejecuta con `python MediaSync-Daemon.py`
 
 ## Descripción
-PlayOnStart es un sistema automatizado que gestiona la reproducción continua de videos mediante VLC, sincronizando contenido desde OneDrive y manteniendo la reproducción actualizada cuando se detectan cambios.
+MediaSync-Daemon es un sistema automatizado que gestiona la reproducción continua de videos mediante VLC, sincronizando contenido desde OneDrive y manteniendo la reproducción actualizada cuando se detectan cambios.
 - Recomendación: Crear tarea en Task Manager para inicio ejecutar al inicio de sesion
-- Opcional: Mantener un acceso directo en escritorio apuntando a `C:\Python312\python.exe C:\...\<dir>\playOnStart\playOnStart.py`
+- Opcional: Mantener un acceso directo en escritorio apuntando a `C:\Python312\python.exe C:\...\<dir>\MediaSync-Daemon\MediaSync-Daemon.py`
 
 ## Requisitos del Sistema
 
@@ -49,9 +49,9 @@ PlayOnStart es un sistema automatizado que gestiona la reproducción continua de
 
 ### Estructura de Archivos
 ```
-playOnStart/
+MediaSync-Daemon/
 │
-├── playOnStart.py      # Script principal PUNTO DE ENTRADA
+├── MediaSync-Daemon.py      # Script principal PUNTO DE ENTRADA
 ├── config.py           # Configuración centralizada
 ├── create_task.py      # Configurador de tarea programada
 ├── file_utils.py       # Utilidades de manejo de archivos
