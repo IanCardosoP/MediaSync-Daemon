@@ -89,7 +89,7 @@ class Config:
         # Formato del mensaje de log
         'LOG_FORMAT': "%(asctime)s [%(levelname)s] - %(message)s",
         # Formato de la fecha en los logs
-        'DATE_FORMAT': "%a %H:%M:%S",
+        'DATE_FORMAT': "%a %d/%m/%Y %H:%M:%S",
         # Tamaño máximo del archivo de log en MB antes de rotar
         'MAX_LOG_SIZE_MB': 10,
         # Número de archivos de backup a mantener
