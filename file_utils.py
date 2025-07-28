@@ -4,6 +4,9 @@ import time
 from logging_utils import log
 from config import Config
 
+video_dir = Config.VIDEO_CONFIG['VIDEO_DIR']
+
+
 # Calcula hash de los videos en video_dir
 def calcular_hash(file_list):
     hashes = []
@@ -17,11 +20,6 @@ def calcular_hash(file_list):
         except (FileNotFoundError, PermissionError) as e:
             missing_files.append(f)
             log(f"WARNING: No se puede acceder al archivo para hashearlo {f}: {e}")
-    
-    if missing_files:
-        # Si hay archivos faltantes, lanzamos una excepción personalizada
-        raise FileAccessError(f"No se puede acceder a {len(missing_files)} archivos: {', '.join(missing_files)}")
-    
     return ";" if not hashes else ";".join(hashes)
 
 def limpiar_archivos_temporales(incluir_activos=False):
@@ -79,7 +77,7 @@ def validar_dir(video_dir):
     return archivos
 
 def copiar_archivos(files, src_dir, dest_dir):
-    """Copia archivos de un directorio a otro"""
+    """Crea y si no existe y copia archivos de un directorio a otro"""
     os.makedirs(dest_dir, exist_ok=True)
     for f in files:
         src = os.path.join(src_dir, f)
@@ -96,4 +94,10 @@ def generar_playlist(files, dest_dir, playlist_path):
         for f in files:
             if any(f.lower().endswith(ext.lower()) for ext in Config.VIDEO_CONFIG['VIDEO_EXTENSIONS']):
                 pl.write(os.path.join(dest_dir, f) + "\n")
-    log("Playlist generada.")
+    log(f"Playlist generada. Incluye: {', '.join(files)}")
+
+def escribir_hash(hash_value, hash_file):
+    """Escribe el hash en el archivo especificado."""
+    with open(hash_file, "w", encoding="utf-8") as hf:
+        hf.write(hash_value)
+    log(f"Hash escrito en {hash_file}.")

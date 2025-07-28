@@ -6,7 +6,7 @@ SI VLC ABIERTO
 	CERRAR_VLC
 
 MIENTRAS VERDADERO
-	no_valid_content = 0
+	error_count = 0
 	MIENTRAS EN VIDEO_DIR NO HAY ALMENOS 1 FICHERO VALIDO
 		LOG: ERROR: SIN CONTENIDO VALIDO EN VIDEO_DIR.
 		ESTIMULAR_ONEDRIVE
@@ -32,12 +32,4 @@ MIENTRAS VERDADERO
 	ESTIMULAR_ONEDRIVE
 	MAIN_LOOP_WAIT
 		
-TODO:
-ESTIMULAR_ONEDRIVE AÑADE LOG DE ESTADO ONEDRIVE
-LANZAR_VLC genera VLC_RUNING.FLAG solo si 1. se valida la correcta ejecucion usando psutil o os.waitpid() y 2. la playlist es valida con al menos 1 mp4
-CERRAR_VLC confirma correcto cerrado con psutil o os.waitpid() y también elimina VLC_RUNING.FLAG
 
-Escenarios complementarios a testear
-- VLC no se cierra correctamente → ¿bloquea nueva ejecución?
-- Playlist generada correctamente pero con rutas corruptas → ¿hay fallback?
-- Temporales no se eliminan por permisos → ¿hay limpieza compensatoria?
