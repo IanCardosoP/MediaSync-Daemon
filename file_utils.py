@@ -4,6 +4,24 @@ import time
 from logging_utils import log
 from config import Config
 
+video_dir = Config.VIDEO_CONFIG['VIDEO_DIR']
+
+
+# Calcula hash de los videos en video_dir
+def calcular_hash(file_list):
+    hashes = []
+    missing_files = []
+    
+    for f in sorted(file_list):
+        file_path = os.path.join(video_dir, f)
+        try:
+            size = os.path.getsize(file_path)
+            hashes.append(f"{size}-{f}")
+        except (FileNotFoundError, PermissionError) as e:
+            missing_files.append(f)
+            log(f"WARNING: No se puede acceder al archivo para hashearlo {f}: {e}")
+    return ";" if not hashes else ";".join(hashes)
+
 def limpiar_archivos_temporales(incluir_activos=False):
     """
     Limpia archivos temporales del sistema.
@@ -49,23 +67,17 @@ def limpiar_archivos_temporales(incluir_activos=False):
         except Exception as e:
             log(f"Advertencia: No se pudo limpiar {path}: {e}")
 
-def validar_videos(video_dir):
+def validar_dir(video_dir):
     """Encuentra videos en el directorio especificado según las extensiones permitidas"""
     extensiones = Config.VIDEO_CONFIG['VIDEO_EXTENSIONS']
     archivos = []
     for f in os.listdir(video_dir):
         if any(f.lower().endswith(ext.lower()) for ext in extensiones):
-            # Si hay límite de tamaño configurado, verificarlo
-            if Config.VIDEO_CONFIG['MAX_FILE_SIZE_MB'] > 0:
-                size_mb = os.path.getsize(os.path.join(video_dir, f)) / (1024 * 1024)
-                if size_mb > Config.VIDEO_CONFIG['MAX_FILE_SIZE_MB']:
-                    log(f"ADVERTENCIA: Archivo {f} excede el tamaño máximo permitido")
-                    continue
             archivos.append(f)
     return archivos
 
 def copiar_archivos(files, src_dir, dest_dir):
-    """Copia archivos de un directorio a otro"""
+    """Crea y si no existe y copia archivos de un directorio a otro"""
     os.makedirs(dest_dir, exist_ok=True)
     for f in files:
         src = os.path.join(src_dir, f)
@@ -82,4 +94,10 @@ def generar_playlist(files, dest_dir, playlist_path):
         for f in files:
             if any(f.lower().endswith(ext.lower()) for ext in Config.VIDEO_CONFIG['VIDEO_EXTENSIONS']):
                 pl.write(os.path.join(dest_dir, f) + "\n")
-    log("Playlist generada.")
+    log(f"Playlist generada. Incluye: {', '.join(files)}")
+
+def escribir_hash(hash_value, hash_file):
+    """Escribe el hash en el archivo especificado."""
+    with open(hash_file, "w", encoding="utf-8") as hf:
+        hf.write(hash_value)
+    log(f"Hash escrito en {hash_file}.")

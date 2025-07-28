@@ -5,11 +5,11 @@ import sys
 from pathlib import Path
 
 def create_scheduled_task():
-    """Crea una tarea programada para ejecutar playOnStart.py al inicio de sesión"""
+    """Crea una tarea programada para ejecutar MediaSync-Daemon.py al inicio de sesión"""
     try:
         # Obtener rutas absolutas
         script_dir = Path(__file__).parent.absolute()
-        script_path = script_dir / "playOnStart.py"
+        script_path = script_dir / "MediaSync-Daemon.py"
         
         # Verificar que el script existe
         if not script_path.exists():
@@ -23,7 +23,7 @@ def create_scheduled_task():
         $action = New-ScheduledTaskAction -Execute "{python_path}" -Argument '"{script_path}"'
         $trigger = New-ScheduledTaskTrigger -AtLogOn
         $settings = New-ScheduledTaskSettingsSet -StartWhenAvailable
-        Register-ScheduledTask -TaskName "playOnStart-VLC" `
+        Register-ScheduledTask -TaskName "MediaSync-Daemon.py" `
                              -Action $action `
                              -Trigger $trigger `
                              -Settings $settings `
@@ -42,7 +42,7 @@ def create_scheduled_task():
 
         # Verificar resultado
         if result.returncode == 0:
-            print("Tarea 'playOnStart-VLC' creada exitosamente.")
+            print("Tarea 'MediaSync-Daemon.py' creada exitosamente.")
         else:
             print(f"ERROR al crear la tarea: {result.stderr}")
 
