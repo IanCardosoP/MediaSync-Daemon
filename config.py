@@ -9,7 +9,7 @@ class Config:
         # Comillas necesarias si contiene espacios
         # Ejemplo: 'C:\\Users\\cardo\\OneDrive\\Escritorio\\videos'
         # Nota: Se recomienda usar rutas absolutas para evitar problemas de resolución
-        'VIDEO_DIR': r"C:\Users\cardo\OneDrive\Escritorio\videos",
+        'VIDEO_DIR': r"C:\Users\Ian Cardoso\OneDrive - Villagroup\Escritorio\VideosPantallas",
         # Extensiones de video permitidas
         # Se pueden agregar más extensiones según sea necesario
         # Ejemplo: ['.mp4', '.mkv', '.avi']
