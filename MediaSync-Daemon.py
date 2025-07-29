@@ -27,6 +27,7 @@ hash_file = Config.PATHS['HASH_FILE']
 flag_file = Config.PATHS['FLAG_FILE']
 download_delay = Config.SYNC_CONFIG['DOWNLOAD_FINISH_DELAY']
 cycle_delay = Config.SYNC_CONFIG['REFRESH_CYCLE_DELAY']
+vlc_ps_check_time = Config.SYNC_CONFIG['VLC_PS_CHECK_TIME']
 max_consecutive_errors = Config.SYNC_CONFIG['MAX_CONSECUTIVE_ERRORS']
 error_retry_delay = Config.SYNC_CONFIG['ERROR_RETRY_DELAY']
 
@@ -108,14 +109,19 @@ while True:
     howisdoing = estimular_onedrive(media_content, video_dir)
     time.sleep(download_delay)
     if howisdoing:
-        log("OneDrive está sincronizado exitosamente.")
+        log("OneDrive está sincronizado.")
     else:
         log("WARNING: OneDrive requiere atención - archivos pendientes detectados.")
     # Esperar el ciclo de refresco antes de la siguiente iteración
-    time.sleep(cycle_delay)
+    # time.sleep(cycle_delay)
 
     # Verificar si VLC sigue activo o fue cerrado inesperadamente para relanzarlo
-    if os.path.exists(flag_file) and not vlc_esta_activo():
-        log("WARNING: FLAG existe pero VLC no está activo - posible crash")
-        iniciar_vlc()
-        log("INFO: VLC reiniciado tras detectarse cerrado")
+    # La suma de los vlc_check_cycles es el total del cycle_delay
+    vlc_check_cycles = cycle_delay // vlc_ps_check_time
+    for cycle in range(vlc_check_cycles):
+        #log(f"INFO: verificando que vlc este corriendo, verificacion {cycle} {range(vlc_check_cycles)}  de {vlc_ps_check_time} segundos")
+        if os.path.exists(flag_file) and not vlc_esta_activo():
+            log("WARNING: FLAG existe pero VLC no está activo - posible crash o fue cerrado accidentalmente")
+            iniciar_vlc()
+            log("INFO: VLC reiniciado tras no detectarse en ejecucion")
+        time.sleep(vlc_ps_check_time)

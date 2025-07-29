@@ -9,7 +9,7 @@ class Config:
         # Comillas necesarias si contiene espacios
         # Ejemplo: 'C:\\Users\\cardo\\OneDrive\\Escritorio\\videos'
         # Nota: Se recomienda usar rutas absolutas para evitar problemas de resolución
-        'VIDEO_DIR': r"C:\Users\Ian Cardoso\OneDrive - Villagroup\Escritorio\VideosPantallas",
+        'VIDEO_DIR': r"C:\VideosPantallas",
         # Extensiones de video permitidas
         # Se pueden agregar más extensiones según sea necesario
         # Ejemplo: ['.mp4', '.mkv', '.avi']
@@ -44,22 +44,32 @@ class Config:
         # Este valor determina cuánto tiempo esperar después de estimular OneDrive
         # antes de considerar que la descarga ha finalizado
         'DOWNLOAD_FINISH_DELAY': 2,
-        # Intervalo de ejecución del bucle principal (segundos) 30 minutos por defecto (1800 segundos)
+
+        # Intervalo de ejecución del bucle principal (segundos) 30 minutos por defecto (1800 segundos) 1 hora(3600)
         # Este valor determina cada cuánto tiempo se revisa el directorio de videos en bucle principal
         # y se actualiza la lista de reproducción suponiendo que no hay problemas de sincronización o de ficheros.
-        'REFRESH_CYCLE_DELAY': 10,
+        'REFRESH_CYCLE_DELAY': 3600,
+
+        # Intervalo para verificar que hay un proceso VLC ejecutandose (segundos) 2 minutos por defecto (120 segundos)
+        # Este valor determina cada cuánto tiempo se revisa en busca de un proceso VLC
+        # y se lanza vlc nuevamente si no existe. Esto para relanzar reproduccion en caso de cierre accidental del VLC.
+        'VLC_PS_CHECK_TIME': 120,
+
         # Número máximo de errores consecutivos antes de detener el script (int)
         # Este valor determina cuántos errores consecutivos se toleran antes de considerar
         # que hay un problema grave y detener el script
         'MAX_CONSECUTIVE_ERRORS': 3,
+
         # Tiempo de espera entre reintentos cuando hay errores (segundos)
         # Este valor determina cuánto tiempo esperar antes de reintentar una operación fallida
         # como la estimulación de OneDrive o la verificación de archivos
         'ERROR_RETRY_DELAY': 2,
+
         # Tamaño mínimo para que un archivo sea verificado tanto al inicio como al final (bytes)
         # Este valor determina el tamaño mínimo de archivo para realizar una verificación
         # de integridad al inicio y al final del archivo, para detectar archivos incompletos
         'MIN_FILE_SIZE_FOR_TAIL_CHECK': 16384,
+
         # Tamaño del bloque de lectura para verificación de archivos (bytes)
         # Se usa para leer el inicio y final de los archivos durante la verificación
         # Este valor determina cuántos bytes se leen al inicio y al final del archivo
@@ -148,6 +158,8 @@ class Config:
             errors.append("El número de archivos de backup del log no puede ser negativo")
         if cls.LOG_CONFIG['LOG_ENCODING'] not in ['utf-8', 'latin-1', 'ascii']:
             errors.append(f"Código de codificación del log no válido: {cls.LOG_CONFIG['LOG_ENCODING']}")
+        if cls.SYNC_CONFIG['VLC_PS_CHECK_TIME'] > cls.SYNC_CONFIG['REFRESH_CYCLE_DELAY'] * 0.5:
+            errors.append("El tiempo de verificación de VLC (VLC_PS_CHECK_TIME) debe ser igual o menor a 0.5 veces el REFRESH_CYCLE_DELAY para permitir al menos dos chequeos por ciclo.")      
         
         # Validar ruta de log válida
         if not cls.LOG_CONFIG['LOG_PATH'] or not os.path.isdir(os.path.dirname(cls.LOG_CONFIG['LOG_PATH'])):
