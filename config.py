@@ -45,7 +45,7 @@ class Config:
 
         # Intervalo para verificar que existe un proceso VLC ejecutandose (segundos) 2 minutos por defecto (120 segundos)
         # Esto para relanzar VLC en caso de cierre accidental o crash del VLC.
-        'VLC_PS_CHECK_TIME': 120,
+        'VLC_PS_CHECK_TIME': 180,
 
         # Número máximo de errores consecutivos antes de detener el script (int)
         # Este valor determina cuántos errores consecutivos se toleran antes de considerar
