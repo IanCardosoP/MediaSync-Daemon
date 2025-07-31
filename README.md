@@ -1,16 +1,13 @@
 # MediaSync-Daemon - Sistema de Reproducción Automática con VLC
 Se ejecuta con `python MediaSync-Daemon.py`
-Se ejecuta el registro de tarea automática con `python create_task.py`
+Se ejecuta el script de creación de tarea automática con `python create_task.py`
 
 ## Descripción
 MediaSync-Daemon es un sistema automatizado que gestiona la reproducción continua de videos mediante VLC, sincronizando contenido desde OneDrive y manteniendo la reproducción actualizada cuando se detectan cambios.
 - Recomendación: Crear tarea en Task Manager para inicio ejecutar al inicio de sesion
-- Opcional: Mantener un acceso directo en escritorio apuntando a `C:\Python312\python.exe C:\...\<dir>\MediaSync-Daemon\MediaSync-Daemon.py`
+- Opcional: Mantener un acceso directo en escritorio apuntando a `python C:\MediaSync-Daemon\MediaSync-Daemon.py`
 
 ## Requisitos del Sistema
-
-## Configuración de SharePoint y OneDrive
-
 ### Hacer disponible un directorio de SharePoint en OneDrive
 1. Abrir el navegador web y acceder al sitio de SharePoint que contiene la biblioteca de videos
 2. Navegar hasta la biblioteca de documentos deseada
@@ -29,21 +26,21 @@ MediaSync-Daemon es un sistema automatizado que gestiona la reproducción contin
 - Evitar problemas de streaming
 - Permitir la detección confiable de cambios
 
-## Configuracion del cliente
+## Configuracion del VLC
 - Recomiendo configurar vlc para soportar una sola instancia
 - Ajustar configuraciones en vlc para no mostrar titulos y transicionar suave entre videos
 - Los videos se pueden cargar a un repo sharepoint, sin requisitos especificos aparte de extencion .mp4
 - Se puede configurar la tarea programada manualmente, o mediante el script `$python create_task.py`
 
-### Software
+### Requisitos de Software
 - Python 3.6 o superior
 - VLC Media Player
 - OneDrive configurado y sincronizado
 - Windows OS (debido al uso de PowerShell para algunas funciones)
 
 ### Permisos
-- Acceso de escritura al directorio temporal del sistema
-- Acceso de lectura al directorio de OneDrive
+- Acceso de lectura y escritura al directorio temporal del sistema
+- Acceso de lectura y escritura al directorio de OneDrive
 - Permisos de administrador para configurar tareas programadas mediante `create_task.py`
 
 ## Configuración
@@ -59,7 +56,7 @@ MediaSync-Daemon/
 ├── sync_utils.py            # Utilidades de sincronización OneDrive
 ├── vlc_utils.py             # Utilidades de control y validación de VLC
 ├── logging_utils.py         # Utilidades de logging con rotación
-├── notes.txt                # Algoritmo fuente y documentación de desarrollo
+├── flujo-planeado.txt       # Algoritmo fuente y documentación de desarrollo
 ├── diagrama-flujo.png       # Diagrama visual del flujo del sistema
 └── stream_active.flag       # Flag de estado (creado durante ejecución)
 ```
@@ -73,7 +70,7 @@ VIDEO_CONFIG = {
     'VIDEO_DIR': r"C:\Users\<usuario>\OneDrive\...\videos",
     # Para biblioteca de SharePoint:
     # 'VIDEO_DIR': r"C:\Users\<usuario>\<Empresa>\<Sitio> - <Biblioteca>\videos",
-    'VIDEO_EXTENSIONS': ['.mp4'],
+    'FORMATOS_DE_VIDEO_ADMITIDOS': ['.mp4'],
     'MAX_FILE_SIZE_MB': 0  # 0 = sin límite
 }
 ```
@@ -96,8 +93,10 @@ VLC_CONFIG = {
 #### 3. Configuración de Sincronización
 ```python
 SYNC_CONFIG = {
-    'DOWNLOAD_FINISH_DELAY': 2,     # Espera post-estimulación OneDrive
-    'REFRESH_CYCLE_DELAY': 10,      # Intervalo de ciclo principal
+    'DOWNLOAD_FINISH_DELAY': 190,   # Espera post-estimulación OneDrive
+    'REFRESH_CYCLE_DELAY': 1800,    # Intervalo de ciclo principal
+    'VLC_PS_CHECK_TIME': 190,       # Intervalo de tiempo en el que se revisa que VLC se esté ejecutando, 
+                                    # para relanzar si no lo está. 
     'MAX_SYNC_RETRIES': 3,          # Reintentos de sincronización
     'MAX_CONSECUTIVE_ERRORS': 3,    # Límite de errores consecutivos
     'ERROR_RETRY_DELAY': 5,         # Espera entre reintentos
@@ -109,7 +108,7 @@ SYNC_CONFIG = {
 #### 4. Configuración de Logging
 ```python
 LOG_CONFIG = {
-    'LOG_PATH': os.path.join(VIDEO_CONFIG['VIDEO_DIR'], "stream_status.log"),
+    'LOG_PATH': os.path.join(VIDEO_CONFIG['VIDEO_DIR'], "MediaSync.log"),
     'LOG_LEVEL': 'INFO',
     'MAX_LOG_SIZE_MB': 10,
     'LOG_BACKUP_COUNT': 3,

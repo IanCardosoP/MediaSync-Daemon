@@ -19,6 +19,7 @@ def _obtener_procesos_vlc():
             procesos.append(proc.info['pid'])
     return procesos
 
+# todo: acoplar a extensiones definidas en el config
 def _verificar_archivo_existe_y_es_mp4(ruta_archivo):
     """Verifica que un archivo exista y sea mp4"""
     return (os.path.exists(ruta_archivo) and 

@@ -1,11 +1,10 @@
 import os
-
 # to-do: previsto, mover el config.py al mismo directorio de sharepoint para facilitar la configuración remota
 
 class Config:
-    # Configuraciones públicas que pueden ser modificadas por el usuario
+    
     VIDEO_CONFIG = {
-        # El directorio compartido mediante OneDrive/SharePoint que contenga *.mp4
+        # El directorio compartido mediante OneDrive/SharePoint que contenga FORMATOS_DE_VIDEO_ADMITIDOS
         # Comillas necesarias si contiene espacios
         # Ejemplo: 'C:\\Users\\cardo\\OneDrive\\Escritorio\\videos'
         # Nota: Se recomienda usar rutas absolutas para evitar problemas de resolución
@@ -13,18 +12,15 @@ class Config:
         # Extensiones de video permitidas
         # Se pueden agregar más extensiones según sea necesario
         # Ejemplo: ['.mp4', '.mkv', '.avi']
-        'VIDEO_EXTENSIONS': ['.mp4'],
+        'FORMATOS_DE_VIDEO_ADMITIDOS': ['.mp4'],
         # Tamaño máximo de archivo permitido en MB (0 = sin límite)
         'MAX_FILE_SIZE_MB': 0
     }
 
     VLC_CONFIG = {
-        # Directorio de instalación VLC. Comillas necesarias si contiene espacios
+        # Directorio de instalación VLC.
         'VLC_EXE': r"C:\Program Files\VideoLAN\VLC\vlc.exe",
-        # Argumentos adicionales para VLC
-        # Se pueden agregar más argumentos según sea necesario
-        # Ejemplo: ['--loop', '--fullscreen']
-        # Nota: Se recomienda usar argumentos compatibles con la versión de VLC instalada
+        # Argumentos para inicializar VLC
         'VLC_ARGS': [
             '--loop',              # Reproducir en bucle
             '--fullscreen',        # Pantalla completa
@@ -33,26 +29,22 @@ class Config:
             '--video-on-top'       # Mantener video siempre visible
         ],
         # Tiempo máximo de espera para matar proceso VLC (segundos)
-        # Si VLC no se cierra en este tiempo, se forzará su cierre
+        # Si VLC no se cierra en este tiempo, se forzará su cierre.
         # Nota: Este valor debe ser mayor que el tiempo de espera en _esperar_cierre_vlc (1 segundos por defecto)
-        # Ejemplo: 3 segundos
         'VLC_KILL_TIMEOUT': 3
     }
 
     SYNC_CONFIG = {
-        # Espera para terminar de descargar después de la estimulación de sincronización (segundos)
-        # Este valor determina cuánto tiempo esperar después de estimular OneDrive
-        # antes de considerar que la descarga ha finalizado
+        # Espera para descargar contenido después de estimular la sincronización (segundos)
+        # Este valor determina cuánto tiempo esperar después de estimular OneDrive, suponiendo que se descarga contenido.
         'DOWNLOAD_FINISH_DELAY': 2,
 
         # Intervalo de ejecución del bucle principal (segundos) 30 minutos por defecto (1800 segundos) 1 hora(3600)
-        # Este valor determina cada cuánto tiempo se revisa el directorio de videos en bucle principal
-        # y se actualiza la lista de reproducción suponiendo que no hay problemas de sincronización o de ficheros.
+        # Este valor determina cada cuánto tiempo se revisa el directorio de videos
         'REFRESH_CYCLE_DELAY': 3600,
 
-        # Intervalo para verificar que hay un proceso VLC ejecutandose (segundos) 2 minutos por defecto (120 segundos)
-        # Este valor determina cada cuánto tiempo se revisa en busca de un proceso VLC
-        # y se lanza vlc nuevamente si no existe. Esto para relanzar reproduccion en caso de cierre accidental del VLC.
+        # Intervalo para verificar que existe un proceso VLC ejecutandose (segundos) 2 minutos por defecto (120 segundos)
+        # Esto para relanzar VLC en caso de cierre accidental o crash del VLC.
         'VLC_PS_CHECK_TIME': 120,
 
         # Número máximo de errores consecutivos antes de detener el script (int)
@@ -63,24 +55,18 @@ class Config:
         # Tiempo de espera entre reintentos cuando hay errores (segundos)
         # Este valor determina cuánto tiempo esperar antes de reintentar una operación fallida
         # como la estimulación de OneDrive o la verificación de archivos
-        'ERROR_RETRY_DELAY': 2,
+        'ERROR_RETRY_DELAY': 10,
 
         # Tamaño mínimo para que un archivo sea verificado tanto al inicio como al final (bytes)
-        # Este valor determina el tamaño mínimo de archivo para realizar una verificación
-        # de integridad al inicio y al final del archivo, para detectar archivos incompletos
         'MIN_FILE_SIZE_FOR_TAIL_CHECK': 16384,
 
         # Tamaño del bloque de lectura para verificación de archivos (bytes)
-        # Se usa para leer el inicio y final de los archivos durante la verificación
-        # Este valor determina cuántos bytes se leen al inicio y al final del archivo
-        # para verificar su integridad y disponibilidad
         'FILE_CHECK_BLOCK_SIZE': 8192
     }
 
     # Configuraciones de directorios temporales y archivos de sistema
     PATHS = {
         # Directorio temporal desde donde se hace la reproducción de medios
-        # Se recomienda usar una ruta absoluta para evitar problemas de resolución
         'TEMP_VIDEO_DIR': os.path.join(os.getenv("TEMP"), "daemon_temp_media"),
         # Archivo de playlist
         'PLAYLIST_PATH': os.path.join(os.getenv("TEMP"), "playlistVLC.m3u"),
@@ -124,7 +110,7 @@ class Config:
         for root, dirs, files in os.walk(cls.VIDEO_CONFIG['VIDEO_DIR']):
             for filename in files:
                 # Solo verificar archivos que podrían ser videos (ignorar logs, etc.)
-                if any(filename.lower().endswith(ext.lower()) for ext in cls.VIDEO_CONFIG['VIDEO_EXTENSIONS']):
+                if any(filename.lower().endswith(ext.lower()) for ext in cls.VIDEO_CONFIG['FORMATOS_DE_VIDEO_ADMITIDOS']):
                     video_encontrado = True
                     break
             if video_encontrado:

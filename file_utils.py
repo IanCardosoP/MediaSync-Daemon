@@ -6,6 +6,8 @@ from config import Config
 
 video_dir = Config.VIDEO_CONFIG['VIDEO_DIR']
 
+# todo: refactorizar para aplicar config global a variable local
+formatos_validos = Config.VIDEO_CONFIG['FORMATOS_DE_VIDEO_ADMITIDOS']
 
 # Calcula hash de los videos en video_dir
 def calcular_hash(file_list):
@@ -69,7 +71,7 @@ def limpiar_archivos_temporales(incluir_activos=False):
 
 def validar_dir(video_dir):
     """Encuentra videos en el directorio especificado según las extensiones permitidas"""
-    extensiones = Config.VIDEO_CONFIG['VIDEO_EXTENSIONS']
+    extensiones = Config.VIDEO_CONFIG['FORMATOS_DE_VIDEO_ADMITIDOS']
     archivos = []
     for f in os.listdir(video_dir):
         if any(f.lower().endswith(ext.lower()) for ext in extensiones):
@@ -92,7 +94,7 @@ def generar_playlist(files, dest_dir, playlist_path):
     """Genera una playlist para VLC"""
     with open(playlist_path, "w", encoding=Config.LOG_CONFIG['LOG_ENCODING']) as pl:
         for f in files:
-            if any(f.lower().endswith(ext.lower()) for ext in Config.VIDEO_CONFIG['VIDEO_EXTENSIONS']):
+            if any(f.lower().endswith(ext.lower()) for ext in Config.VIDEO_CONFIG['FORMATOS_DE_VIDEO_ADMITIDOS']):
                 pl.write(os.path.join(dest_dir, f) + "\n")
     log(f"Playlist generada. Incluye: {', '.join(files)}")
 
