@@ -230,6 +230,13 @@ python create_task.py
 ## Solución de Problemas
 
 ### Problemas Comunes
+1. **Acceso Denegado: No se puede instalar la dependencia PSUTIL**
+	psutil es la librería utilizada para monitorear los procesos del sistema desde python. 
+	Un entorno enrolado no permite la ejecución de scripts como para utlizar un environment aislado. Soluciones:
+	- Usar consola de administrador
+	- Intentar con 'python -m pip install psutil'
+	- Intentar con 'pip install --user psutil'
+
 1. **VLC no inicia**:
    - Verificar logs para detalles de validación
    - Comprobar playlist en `%TEMP%\playlistVLC.m3u`
