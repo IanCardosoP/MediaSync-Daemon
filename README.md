@@ -1,4 +1,5 @@
 # MediaSync-Daemon - Sistema de Reproducción Automática con VLC
+Documentación detallada: https://deepwiki.com/IanCardosoP/MediaSync-Daemon
 Se ejecuta con `python MediaSync-Daemon.py` o doble clic
 Se ejecuta el script de creación de tarea automática en una terminal de administrador con `python create_task.py`
 
