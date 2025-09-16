@@ -1,6 +1,6 @@
 # MediaSync-Daemon - Sistema de Reproducción Automática con VLC
-Se ejecuta con `python MediaSync-Daemon.py`
-Se ejecuta el script de creación de tarea automática con `python create_task.py`
+Se ejecuta con `python MediaSync-Daemon.py` o doble clic
+Se ejecuta el script de creación de tarea automática en una terminal de administrador con `python create_task.py`
 
 ## Descripción
 MediaSync-Daemon es un sistema automatizado que gestiona la reproducción continua de videos mediante VLC, sincronizando contenido desde OneDrive y manteniendo la reproducción actualizada cuando se detectan cambios.
@@ -18,13 +18,8 @@ MediaSync-Daemon es un sistema automatizado que gestiona la reproducción contin
 1. Abrir OneDrive en el explorador de Windows
 2. Localizar la carpeta sincronizada de SharePoint
 3. Clic derecho en la carpeta
-4. Seleccionar "Configurar siempre mantener en este dispositivo"
+4. Seleccionar "Siempre mantener en este dispositivo"
 5. Esperar a que se complete la descarga inicial (círculo verde con palomita)
-
-**Nota**: Es importante marcar como "Siempre disponible" el directorio entero para:
-- Garantizar acceso inmediato a los videos
-- Evitar problemas de streaming
-- Permitir la detección confiable de cambios
 
 ## Configuracion del VLC
 - Recomiendo configurar vlc para soportar una sola instancia
@@ -56,7 +51,6 @@ MediaSync-Daemon/
 ├── sync_utils.py            # Utilidades de sincronización OneDrive
 ├── vlc_utils.py             # Utilidades de control y validación de VLC
 ├── logging_utils.py         # Utilidades de logging con rotación
-├── flujo-planeado.txt       # Algoritmo fuente y documentación de desarrollo
 ├── diagrama-flujo.png       # Diagrama visual del flujo del sistema
 └── stream_active.flag       # Flag de estado (creado durante ejecución)
 ```

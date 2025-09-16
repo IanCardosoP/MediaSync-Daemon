@@ -62,3 +62,6 @@ if __name__ == "__main__":
         )
     else:
         create_scheduled_task()
+        
+    # Pausa para leer la salida
+    input("\nPresiona ENTER para salir...")
